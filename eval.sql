@@ -102,11 +102,12 @@ DELIMITER ;
 -- 3)Mise en place d'une règle de gestion
 /*  j'ai proposé d'augmenter le prix de fret de 5%*/
 
-CREATE TRIGGER `transport` AFTER INSERT ON `orderdetails` FOR EACH ROW BEGIN 
+CREATE TRIGGER `transport` AFTER INSERT ON `orderdetails` FOR EACH ROW 
+BEGIN 
   DECLARE customerCountry VARCHAR(15);
   DECLARE supplierCountry VARCHAR(15);
-  SET customerCountry = ( SELECT Country FROM customers INNER JOIN orders on customers.CustomerID = orders.CustomerID INNER JOIN orderdetails on orders.OrderID= orderdetails.OrderID WHERE orderdetails.OrderID =NEW.OrderID LIMIT 1); 
-  SET supplierCountry = ( SELECT Country FROM suppliers INNER JOIN products on suppliers.SupplierID = products.SupplierID INNER JOIN orderdetails on products.ProductID= orderdetails.ProductID WHERE orderdetails.ProductID =new.ProductID LIMIT 1); 
+  SET customerCountry = ( SELECT Country FROM customers INNER JOIN orders on customers.CustomerID = orders.CustomerID INNER JOIN orderdetails on orders.OrderID= orderdetails.OrderID WHERE orderdetails.OrderID =NEW.OrderID AND  orderdetails.ProductID =new.ProductID ); 
+  SET supplierCountry = ( SELECT Country FROM suppliers INNER JOIN products on suppliers.SupplierID = products.SupplierID INNER JOIN orderdetails on products.ProductID= orderdetails.ProductID WHERE orderdetails.ProductID =new.ProductID AND orderdetails.OrderID =NEW.OrderID); 
   IF customerCountry != supplierCountry 
    THEN 
     UPDATE orders
